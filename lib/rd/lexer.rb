@@ -2,21 +2,41 @@ module RD
 	Pattern = Struct.new(:name, :pattern, :block)
 
 	class Token
-		def initialize( pattern, )
-			@value = {}
+		def initialize(pattern_name, value)
+			@data = {pattern_name, value}
 		end
 	end
 		
 	class Lexer
 		def initialize(&block)
 			@patterns = []
-		
+			....
 			instance_eval(&block)
 		end
 
-		def lex(expr)
-			# Necesitamos un puntero
-			# A la expresion regular le añadimos \G que es un ancla a la ultima posicion que cazó
+		def lex(string)
+			@tokens = []
+			pos = 0
+			len = string.length - 1
+			until pos > len
+				m = @patterns.any? do |p|	
+					n = p.pattern.match(string, pos)	
+					if n then
+						name = p.name
+						name = n[0] unless name
+						name = name.to_s
+
+						@tokens << Token.new(name, p.block.call(n.to_s));
+						pos += n[0].length
+						true
+					else 
+						false
+					end
+				end 
+				if (m === true)
+					raise "No ha cazado"
+		
+			end			
 		end
 
 		def white(expr, &block)
